@@ -1106,6 +1106,9 @@ class CythonCompileTestCase(unittest.TestCase):
                     extension = newext or extension
             if self.language == 'cpp':
                 extension.language = 'c++'
+                compiler_name = build_extension.compiler or ccompiler.get_default_compiler()
+                if compiler_name == 'openvms':
+                    extension.extra_compile_args.append('/WARN=DISABLE=ALL')
             build_extension.extensions = [extension]
             build_extension.build_temp = workdir
             build_extension.build_lib  = workdir
@@ -1724,12 +1727,15 @@ class EndToEndTest(unittest.TestCase):
             return content.decode()
         except UnicodeDecodeError:
             return content.decode('iso-8859-1')
+        except:
+            return ''
 
     def runTest(self):
         self.success = False
         commands = (self.commands
-            .replace("CYTHON", "PYTHON %s" % os.path.join(self.cython_root, 'cython.py'))
-            .replace("PYTHON", sys.executable))
+            .replace("CYTHON", "PYTHON %s" % os.path.join(self.cython_root, 'cython.py')))
+        if sys.platform != 'OpenVMS':
+            commands = (commands.replace("PYTHON", sys.executable))
         old_path = os.environ.get('PYTHONPATH')
         env = dict(os.environ)
         new_path = self.cython_syspath
