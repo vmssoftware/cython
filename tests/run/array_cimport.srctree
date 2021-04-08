@@ -11,14 +11,15 @@ setup(
 )
 
 
-######## tt.pxd ########
+# OpenVMS issue: tt is reserved OS name
+######## tt_.pxd ########
 
 from cpython.array cimport array
 
 cdef class Foo:
     cdef array obj
 
-######## tt.pyx ########
+######## tt_.pyx ########
 
 cdef class Foo:
     def __init__(self, data):
@@ -28,7 +29,7 @@ cdef class Foo:
 
 from array import array
 from cpython.array cimport array
-from tt cimport Foo
+from tt_ cimport Foo
 
 cdef array a = array('i', [1,2,3])
 cdef Foo x
