@@ -1106,9 +1106,6 @@ class CythonCompileTestCase(unittest.TestCase):
                     extension = newext or extension
             if self.language == 'cpp':
                 extension.language = 'c++'
-                compiler_name = build_extension.compiler or ccompiler.get_default_compiler()
-                if compiler_name == 'openvms':
-                    extension.extra_compile_args.append('/WARN=DISABLE=ALL')
             build_extension.extensions = [extension]
             build_extension.build_temp = workdir
             build_extension.build_lib  = workdir
@@ -1889,6 +1886,21 @@ class RegExSelector(object):
     def __call__(self, testname, tags=None):
         return self.regex_matches(testname)
 
+class StartTestSelector(object):
+    def __init__(self, pattern_string):
+        try:
+            self.regex_matches = re.compile(pattern_string, re.I|re.U).search
+        except re.error:
+            print('Invalid pattern: %r' % pattern_string)
+            raise
+
+    def __call__(self, testname, tags=None):
+        if not self.regex_matches:
+            return True
+        if self.regex_matches(testname):
+            self.regex_matches = None
+            return True
+        return False
 
 def string_selector(s):
     if ':' in s:
@@ -2114,6 +2126,9 @@ def main():
     parser.add_option("--pythran-dir", dest="pythran_dir", default=None,
                       help="specify Pythran include directory. This will run the C++ tests using Pythran backend for Numpy")
 
+    parser.add_option("-S", "--start-test", dest="start_test", default=None,
+                      help="Starting test name")
+
     options, cmd_args = parser.parse_args(args)
 
     if options.with_cython and sys.version_info[0] >= 3:
@@ -2336,6 +2351,8 @@ def runtests(options, cmd_args, coverage=None):
                 test_bugs = True
 
     selectors = [ string_selector(r) for r in cmd_args ]
+    if options.start_test:
+        selectors += [StartTestSelector(options.start_test)]
     verbose_excludes = selectors or options.verbosity >= 2
     if not selectors:
         selectors = [ lambda x, tags=None: True ]
