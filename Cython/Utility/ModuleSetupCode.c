@@ -384,9 +384,13 @@ class __Pyx_FakeReference {
 #if PY_VERSION_HEX >= 0x030800A4 && PY_VERSION_HEX < 0x030800B2
   #define __Pyx_PyCode_New(a, k, l, s, f, code, c, n, v, fv, cell, fn, name, fline, lnos) \
           PyCode_New(a, 0, k, l, s, f, code, c, n, v, fv, cell, fn, name, fline, lnos)
-#else
+#elif PY_VERSION_HEX < 0x030B0000
   #define __Pyx_PyCode_New(a, k, l, s, f, code, c, n, v, fv, cell, fn, name, fline, lnos) \
           PyCode_New(a, k, l, s, f, code, c, n, v, fv, cell, fn, name, fline, lnos)
+#else
+  // for Python 3.11
+  #define __Pyx_PyCode_New(a, k, l, s, f, code, c, n, v, fv, cell, fn, name, fline, lnos) \
+          PyCode_New(a, k, l, s, f, code, c, n, v, fv, cell, fn, name, fline, lnos, __pyx_empty_bytes)
 #endif
   #define __Pyx_DefaultClassType PyType_Type
 #endif

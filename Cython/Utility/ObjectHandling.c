@@ -2000,11 +2000,19 @@ static PyObject *__Pyx_PyFunction_FastCallDict(PyObject *func, PyObject **args, 
   // offsetof(PyFrameObject, f_localsplus) differs between regular C-Python and Stackless Python.
   // Therefore the offset is computed at run time from PyFrame_type.tp_basicsize. That is feasible,
   // because f_localsplus is the last field of PyFrameObject (checked by Py_BUILD_ASSERT_EXPR below).
+#if PY_VERSION_HEX < 0x030B0000
   #define __Pxy_PyFrame_Initialize_Offsets()  \
     ((void)__Pyx_BUILD_ASSERT_EXPR(sizeof(PyFrameObject) == offsetof(PyFrameObject, f_localsplus) + Py_MEMBER_SIZE(PyFrameObject, f_localsplus)), \
      (void)(__pyx_pyframe_localsplus_offset = ((size_t)PyFrame_Type.tp_basicsize) - Py_MEMBER_SIZE(PyFrameObject, f_localsplus)))
   #define __Pyx_PyFrame_GetLocalsplus(frame)  \
     (assert(__pyx_pyframe_localsplus_offset), (PyObject **)(((char *)(frame)) + __pyx_pyframe_localsplus_offset))
+#else
+  #define __Pxy_PyFrame_Initialize_Offsets()  \
+    ((void)__Pyx_BUILD_ASSERT_EXPR(sizeof(PyFrameObject) == offsetof(PyFrameObject, f_localsptr) + Py_MEMBER_SIZE(PyFrameObject, f_localsptr)), \
+     (void)(__pyx_pyframe_localsplus_offset = ((size_t)PyFrame_Type.tp_basicsize) - Py_MEMBER_SIZE(PyFrameObject, f_localsptr)))
+  #define __Pyx_PyFrame_GetLocalsplus(frame)  \
+    (frame->f_localsptr)
+#endif
 #endif
 
 
