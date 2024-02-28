@@ -54,6 +54,7 @@ setup_args['package_data'] = {
     'Cython.Compiler' : ['*.pxd'],
     'Cython.Runtime'  : ['*.pyx', '*.pxd'],
     'Cython.Utility'  : ['*.pyx', '*.pxd', '*.c', '*.h', '*.cpp'],
+    'Cython.Utility.VMS' : ['*.pyx', '*.pxd', '*.c', '*.h', '*.cpp'],
     'Cython'          : [ p[7:] for p in pxd_include_patterns ],
     'Cython.Debugger.Tests': ['codefile', 'cfuncs.c'],
 }
@@ -221,6 +222,7 @@ packages = [
     'Cython.Build.Tests',
     'Cython.Compiler.Tests',
     'Cython.Utility',
+    'Cython.Utility.VMS',
     'Cython.Tempita',
     'pyximport',
 ]

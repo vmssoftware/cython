@@ -7,6 +7,7 @@ from __future__ import absolute_import
 import copy
 import hashlib
 import re
+import sys
 
 try:
     reduce
@@ -4101,6 +4102,20 @@ RANK_LONG = _rank_to_type_name.index('long')
 RANK_FLOAT = _rank_to_type_name.index('float')
 UNSIGNED = 0
 SIGNED = 2
+
+if sys.platform == 'OpenVMS':
+    rank_to_type_name = (
+        "char",         # 0
+        "short",        # 1
+        "int",          # 2
+        "int",          # 3
+        "PY_LONG_LONG", # 4
+        "float",        # 5
+        "double",       # 6
+        "long double",  # 7
+    )
+    _rank_to_type_name = list(rank_to_type_name)
+    RANK_LONG = _rank_to_type_name.index('int')
 
 error_type =    ErrorType()
 unspecified_type = UnspecifiedType()

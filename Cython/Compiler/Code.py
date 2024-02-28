@@ -201,6 +201,8 @@ def get_utility_dir():
     # make this a function and not global variables:
     # http://trac.cython.org/cython_trac/ticket/475
     Cython_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if sys.platform == 'OpenVMS':
+        return os.path.join(Cython_dir, "Utility", "VMS")
     return os.path.join(Cython_dir, "Utility")
 
 
